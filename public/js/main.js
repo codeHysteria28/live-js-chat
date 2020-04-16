@@ -11,6 +11,12 @@ const socket = io();
 // Join chat room
 socket.emit('joinRoom', { username, room });
 
+// Get room and users
+socket.on('roomUsers', ({room, users}) => {
+    outputRoomName(room);
+    outputUsers(users);
+});
+
 // Message from server
 socket.on('message',message => {
     outputMessage(message);
@@ -35,7 +41,6 @@ chatForm.addEventListener('submit', (e) => {
 });
 
 // Output message to DOM
-
 function outputMessage(message) {
     const div = document.createElement('div');
     div.classList.add('message');
@@ -44,4 +49,14 @@ function outputMessage(message) {
         ${message.text}
     </p>`;
     document.querySelector('.chat-messages').appendChild(div);
+}
+
+// Add room name to DOM
+function outputRoomName() {
+
+}
+
+// Add user to DOM
+function outputUsers() {
+
 }
