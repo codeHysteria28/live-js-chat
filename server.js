@@ -12,7 +12,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Run when client connect
 io.on('connection', socket => {
-    console.log('new websocket con');
+    //Welcome current user
+    socket.emit('message', 'Welcome to SpireChat');
+
+    //Broadcast when user connects 
+    socket.broadcast.emit('message', 'A user has joined the chat');
+
+    //Runs when client disconnects
+    socket.on('disconnect', () => {
+        io.emit('message', 'A user has left a chat');
+    });
+
+    //Listen for chatMessage
+    socket.on('chatMessage', (msg) => {
+        io.emit('message', msg);
+    });
 });
 
 const PORT = process.env.PORT || 3000;
