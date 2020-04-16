@@ -17,8 +17,10 @@
 body {
 	font-family: 'Roboto', sans-serif;
 	font-size: 16px;
-	background: var(--light-color);
 	margin: 20px;
+	background-image: url("background.png");
+	background-repeat: no-repeat;
+	background-size: cover;
 }
 
 ul {

@@ -2,6 +2,8 @@ const path = require('path');
 const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
+const formatMessage = require('./utils/messages');
+const { userJoin, getCurrentUser } = require('./utils/users');
 
 const app = express();
 const server = http.createServer(app);
@@ -10,22 +12,31 @@ const io = socketio(server);
 // Set static folder 
 app.use(express.static(path.join(__dirname, 'public')));
 
+//bot name
+const botName = 'Admin bot';
+
 // Run when client connect
 io.on('connection', socket => {
-    //Welcome current user
-    socket.emit('message', 'Welcome to SpireChat');
+    socket.on('joinRoom', ({ username, room }) => {
+        const user = userJoin(socket.id, username, room);
 
-    //Broadcast when user connects 
-    socket.broadcast.emit('message', 'A user has joined the chat');
+        socket.join(user.room);
 
-    //Runs when client disconnects
-    socket.on('disconnect', () => {
-        io.emit('message', 'A user has left a chat');
+        //Welcome current user
+        socket.emit('message', formatMessage(botName, 'Welcome to SpireChat'));
+
+        //Broadcast when user connects 
+        socket.broadcast.to(user.room).emit('message', formatMessage(botName, 'A user has joined the chat'));
     });
 
     //Listen for chatMessage
     socket.on('chatMessage', (msg) => {
-        io.emit('message', msg);
+        io.emit('message', formatMessage('User',msg));
+    });
+
+    //Runs when client disconnects
+    socket.on('disconnect', () => {
+        io.emit('message',formatMessage(botName ,'A user has left a chat'));
     });
 });
 
